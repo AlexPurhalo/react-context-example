@@ -1,21 +1,53 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
+const ThemeContext = React.createContext('light')
+
+class ThemeProvider extends React.Component {
+	state = { theme: 'light' }
+	
+	toggleTheme = () => {
+		this.setState(({ theme }) => ({
+			theme: theme === 'light' ? 'dark' : 'light',
+		}))
+	}
+	
+	render() {
+		return (
+      <ThemeContext.Provider value={{ theme: this.state.theme, toggleTheme: this.toggleTheme }}>
+				{this.props.children}
+      </ThemeContext.Provider>
+		)
+	}
 }
 
-export default App;
+const ThemeConsumer = ThemeContext.Consumer
+
+const styles = {
+	dark: {
+		backgroundColor: 'black',
+		color: 'white',
+	},
+	light: {
+		backgroundColor: 'white',
+		color: 'black',
+	},
+}
+
+export default class App extends React.Component {
+	render() {
+		return (
+      <ThemeProvider>
+        <ThemeConsumer>
+        
+					{({ theme, toggleTheme }) => (
+					  <div>
+              <button onClick={toggleTheme}>toggle</button>
+              <div style={styles[theme]}>{theme}</div>
+            </div>
+          )}
+        </ThemeConsumer>
+      </ThemeProvider>
+		)
+	}
+}
+
